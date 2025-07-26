@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Switch Statement + getElementsByClassName()</title>
+  <script src="JavaScript/JavaScript_1.js" defer></script>
+  <style>
+    .result { font-weight: bold; margin-top: 12px; }
+    .highlight { background: yellow; }
+
+    /* Canvas styling */
+    #myCanvas {
+      border: 2px solid black;
+      display: block;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Favorite Animal Switch Statement</h1>
+
+  <label for="animal">Choose an animal:</label>
+  <input type="text" id="animal" placeholder="e.g., cat, dog, bird" />
+  <button onclick="animalChoice()">Submit</button>
+  <button onclick="clearResults()">Clear Results</button>
+  <button onclick="highlightResults()">Highlight Results</button>
+
+  <!-- Multiple elements sharing the same class so we can target them with getElementsByClassName -->
+  <p class="result"></p>
+  <p class="result"></p>
+
+  <!-- Canvas element -->
+  <canvas id="myCanvas" width="400" height="200"></canvas>
+
+  <script>
+    // Drawing on the canvas
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "lightblue";
+    ctx.fillRect(10, 10, 150, 100);
+
+    ctx.fillStyle = "red";
+    ctx.font = "20px Arial";
+    ctx.fillText("Hello Canvas!", 20, 60);
+  </script>
+</body>
+</html>

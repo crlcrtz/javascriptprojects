@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Attributes Demo</title>
+  <script src="JavaScript/JavaScript_3.js" defer></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    ul { list-style: none; padding: 0; }
+    li.product {
+      padding: 8px 12px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    li.product[data-clicked="true"] {
+      background: #e8f7ff;
+      border-color: #7ed0ff;
+    }
+    button { margin-top: 16px; padding: 8px 12px; }
+    #output { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Using data-* Attributes</h1>
+
+  <p>Click a product to see its data attributes:</p>
+
+  <ul id="products">
+    <li class="product"
+        data-id="101"
+        data-name="Keyboard"
+        data-price="49.99"
+        data-category="peripherals">
+      Keyboard
+    </li>
+
+    <li class="product"
+        data-id="102"
+        data-name="Mouse"
+        data-price="29.50"
+        data-category="peripherals">
+      Mouse
+    </li>
+
+    <li class="product"
+        data-id="201"
+        data-name="Monitor"
+        data-price="199.99"
+        data-category="display">
+      Monitor
+    </li>
+  </ul>
+
+  <button id="calcTotal">Calculate Total Price of Peripherals</button>
+
+  <div id="output"></div>
+</body>
+</html>
