@@ -4,9 +4,7 @@ let activePlayer = 'X';
 // Stores the moves made (e.g., "0X", "4O")
 let selectedSquares = [];
 
-/* =========================
-   CORE GAMEPLAY
-   ========================= */
+// ===== CORE GAMEPLAY =====
 function placeXOrO(squareNumber) {
   // Prevent selecting an already-selected square
   if (!selectedSquares.some(el => el.includes(squareNumber))) {
@@ -21,8 +19,8 @@ function placeXOrO(squareNumber) {
     // Play placement audio
     audio('./media/place.mp3');
 
-    // Check if someone won or tied; stop if game ended
-    if (checkWinConditions()) return true;
+    // Check if someone won or tied
+    checkWinConditions();
 
     // Toggle player
     activePlayer = (activePlayer === 'X') ? 'O' : 'X';
@@ -30,7 +28,7 @@ function placeXOrO(squareNumber) {
     // If it's the computer's turn, run it after a short delay
     if (activePlayer === 'O') {
       disableClick();
-      setTimeout(() => { computersTurn(); }, 300);
+      setTimeout(() => { computersTurn(); }, 1000);
     }
 
     return true; // Needed for computersTurn loop
@@ -38,98 +36,27 @@ function placeXOrO(squareNumber) {
   return false;
 }
 
-/* =========================
-   UNBEATABLE COMPUTER (MINIMAX)
-   ========================= */
+// Computer picks a random open square (beatable)
 function computersTurn() {
-  const board = getBoardState();
-  const bestMove = findBestMove(board); // returns index (0-8)
-  placeXOrO(String(bestMove));
+  let availableSquares = [];
+
+  // Collect all empty squares
+  for (let i = 0; i < 9; i++) {
+    if (!selectedSquares.some(el => el.includes(i))) {
+      availableSquares.push(i);
+    }
+  }
+
+  // Pick a random square
+  if (availableSquares.length > 0) {
+    let randomIndex = Math.floor(Math.random() * availableSquares.length);
+    placeXOrO(availableSquares[randomIndex]);
+  }
+
   enableClick();
 }
 
-// Convert selectedSquares (["0X","4O",...]) into a 9-slot board: ['X', null, ...]
-function getBoardState() {
-  const board = Array(9).fill(null);
-  for (const move of selectedSquares) {
-    const index = parseInt(move.match(/\d+/)[0], 10);
-    const player = move.slice(-1);
-    board[index] = player;
-  }
-  return board;
-}
-
-const LINES = [
-  [0,1,2], [3,4,5], [6,7,8], // rows
-  [0,3,6], [1,4,7], [2,5,8], // cols
-  [0,4,8], [2,4,6]           // diagonals
-];
-
-function evaluateBoard(board) {
-  for (const [a,b,c] of LINES) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-      return board[a] === 'O' ? 10 : -10; // O (computer) maximizes, X (human) minimizes
-    }
-  }
-  return 0;
-}
-
-function isMovesLeft(board) {
-  return board.some(cell => cell === null);
-}
-
-// Minimax with depth to favor faster wins / slower losses
-function minimax(board, depth, isMax) {
-  const score = evaluateBoard(board);
-  if (score === 10)  return score - depth;   // prefer quicker wins
-  if (score === -10) return score + depth;   // prefer slower losses
-  if (!isMovesLeft(board)) return 0;         // tie
-
-  if (isMax) { // computer's turn (O)
-    let best = -Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === null) {
-        board[i] = 'O';
-        best = Math.max(best, minimax(board, depth + 1, false));
-        board[i] = null;
-      }
-    }
-    return best;
-  } else { // human's turn (X)
-    let best = Infinity;
-    for (let i = 0; i < 9; i++) {
-      if (board[i] === null) {
-        board[i] = 'X';
-        best = Math.min(best, minimax(board, depth + 1, true));
-        board[i] = null;
-      }
-    }
-    return best;
-  }
-}
-
-function findBestMove(board) {
-  let bestVal = -Infinity;
-  let bestMove = -1;
-
-  for (let i = 0; i < 9; i++) {
-    if (board[i] === null) {
-      board[i] = 'O';
-      const moveVal = minimax(board, 0, false);
-      board[i] = null;
-
-      if (moveVal > bestVal) {
-        bestVal = moveVal;
-        bestMove = i;
-      }
-    }
-  }
-  return bestMove;
-}
-
-/* =========================
-   WIN / TIE CHECKING
-   ========================= */
+// ===== WIN / TIE CHECKING =====
 function checkWinConditions() {
   // Helper to check if 3 values exist in selectedSquares
   function arrayIncludes(a, b, c) {
@@ -163,10 +90,7 @@ function checkWinConditions() {
   else if (selectedSquares.length >= 9) {
     audio('./media/tie.mp3');
     setTimeout(resetGame, 500);
-    return true;
   }
-
-  return false;
 }
 
 // Handle a win
@@ -178,9 +102,7 @@ function win(player, x1, y1, x2, y2) {
   return true;
 }
 
-/* =========================
-   UTILITIES
-   ========================= */
+// ===== UTILITIES =====
 
 // Plays an audio file
 function audio(url) {
@@ -205,22 +127,4 @@ function drawWinLine(x1, y1, x2, y2) {
 
   c.clearRect(0, 0, canvas.width, canvas.height);
   c.strokeStyle = 'rgba(70, 255, 33, 0.8)';
-  c.lineWidth = 10;
-  c.beginPath();
-  c.moveTo(x1, y1);
-  c.lineTo(x2, y2);
-  c.stroke();
-}
-
-// Reset the game board
-function resetGame() {
-  const squares = document.getElementsByTagName('td');
-  for (let i = 0; i < squares.length; i++) {
-    squares[i].style.backgroundImage = '';
-  }
-  const canvas = document.getElementById('win-lines');
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-  selectedSquares = [];
-  activePlayer = 'X';
-  enableClick();
-}
+  c.lineWidth
